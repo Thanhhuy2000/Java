@@ -1,36 +1,28 @@
 package model;
 
-public class Racer {
+public abstract class Racer {
     protected String id;
     protected String name;
     protected int fuel;
-    protected Type vehicleType;
-    protected int speed;
-    protected int durability;
-    protected double control;
+    protected VehicleType vehicleType;
+    protected int obstaclesPassedCount = 0;
 
-    public Racer(String id, String name, int fuel, Type vehicleType, int speed, int durability, double control) {
+    public Racer(String id, String name, int fuel, VehicleType vehicleType) {
         this.id = id;
         this.name = name;
         this.fuel = fuel;
         this.vehicleType = vehicleType;
-        this.speed = speed;
-        this.durability = durability;
-        this.control = control;
     }
 
-    public String getId() {return id;}
-    public String getName() {return name;}
-    public int getFuel() {return fuel;}
-    public void setFuel(int fuel) {this.fuel = fuel;}
-    public Type getVehicleType() {return vehicleType;}
-    public int getSpeed() {return speed;}
-    public int getDurability() {return durability;}
-    public double getControl() {return control;}
+    public abstract boolean canNavigate(Obstacle obstacle);
+    public abstract boolean navigateObstacle(RaceState state, Obstacle obstacle);
+    public abstract void refuel();
 
-    public abstract void naviagateObstacle(Obstacle obstacle, RaceState state);
-    public abstract boolean canNavigate();
-    public void refuel(){
-        this.fuel = Math.min(100, this.fuel + 10);
-    }
-}
+    public String getName() { return name; }
+    public int getFuel() { return fuel; }
+    public VehicleType getVehicleType() { return vehicleType; }
+    public String getId() { return id; }
+    public void setFuel(int fuel) { this.fuel = fuel; }
+    public int getObstaclesPassedCount() { return obstaclesPassedCount; }
+    public void incrementObstaclesPassed() { obstaclesPassedCount++; }
+} 
