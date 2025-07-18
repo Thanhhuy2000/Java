@@ -20,4 +20,4 @@ public class RaceState {
     public int getMaxRounds() { return maxRounds; }
     public List<Team> getTeams() { return teams; }
     public List<Obstacle> getObstacles() { return obstacles; }
-} 
+}
