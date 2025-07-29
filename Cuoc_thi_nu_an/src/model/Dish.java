@@ -12,9 +12,9 @@ public class Dish {
     public Dish(int id, String name, int prepTime, int bonus) {
         this.id = id;
         this.name = name;
-        this.quality = quality;
+        this.quality = 0;
         this.prepTime = prepTime;
-        this.presentation = presentation;
+        this.presentation = 0;
         this.score = 0;
         this.bonus = bonus;
     }

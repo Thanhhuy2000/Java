@@ -91,7 +91,12 @@ public class Simulation {
         tmp = Integer.parseInt(scanner.nextLine());
         Team team1 = null;
         Team team2 = null;
-        if (tmp == 1) {
+        if (tmp == 0) {
+            team1 = teams.get(0);
+            team2 = teams.get(1);
+        }
+
+        else if (tmp == 1) {
             state.switchTurn();
         }
         else if(tmp != 0 && tmp != 1) {
@@ -115,20 +120,25 @@ public class Simulation {
             //Chon mon an thuc hien
             System.out.println("Danh sach mon an: ");
             for(Dish dish : dishs){
-                System.out.println(dish.getId() + "." + dish.getName());
+                System.out.println(dish.getId() + "." + dish.getName() + ", Prep time: " + dish.getPrepTime());
             }
-            System.out.print("Chon mon an thuc hien(ID): ");
+            System.out.print("Chon mon an thuc hien(ID). Luu y: chi chon mon con preptime: ");
             int choice = Integer.parseInt(scanner.nextLine()) - 1;
             Dish dish = dishs.get(choice);
+            if(dish.getPrepTime() == 0 || dish == null) {
+                throw new InvalidContestantException("Invalid sos");
+            }
 
             //Hanh dong
             if(contestant instanceof HeadChef){
                 // Tang diem chat luong
-                int num = ((HeadChef) contestant).getCookingSkil();
-                dish.setQuality(dish.getQuality() + num);
+                int num = ((HeadChef) contestant).getCookingSkil() * 2;
+                dish.setQuality(Math.min(100, dish.getQuality() + num));
                 // Giam thoi gian can hoan thanh mon
                 dish.setPrepTime(Math.max(0, dish.getPrepTime() - 30));
+                // Giam nang luong cua dau bep thuc hien
                 contestant.decreaseEnergy();
+                // In ket qua
                 System.out.println("Thi sinh " + contestant.getName() + " (" + contestant.getRole() + ") nau mon " + dish.getName() + " -> Tang chat luong len " + num);
                 log.add("* Luot" + state.getTurnCount() + ": " + contestant.getName() + " (Doi " + team1.getName() + ")" + " tang chat luong mon " + dish.getName());
             }
@@ -136,17 +146,21 @@ public class Simulation {
                 // Giam manh thoi gian can hoan thanh mon
                 int num = ((SousChef) contestant).getPrepSpeed() * 7;
                 dish.setPrepTime(Math.max(0, dish.getPrepTime() - num));
+                // Giam nang luong cua dau bep thuc hien
                 contestant.decreaseEnergy();
+                // In ket qua
                 System.out.println("Thi sinh " + contestant.getName() + " (" + contestant.getRole() + ") chuan bi mon " + dish.getName() + " -> Giam thoi gian di " + num);
                 log.add("* Luot" + state.getTurnCount() + ": " + contestant.getName() + " (Doi " + team1.getName() + ")" + " chuan bi mon " + dish.getName());
             }
             else if(contestant instanceof DessertSpecialist){
                 // Tang diem trinh bay
                 int num = (int)((((DessertSpecialist) contestant).getCreativity() + Math.random()) * 10);
-                dish.setPresentation(dish.getPresentation() + num);
+                dish.setPresentation(Math.min(100, dish.getPresentation() + num));
                 // Giam thoi gian can hoan thanh mon
                 dish.setPrepTime(Math.max(0, dish.getPrepTime() - 10));
+                // Giam nang luong cua dau bep thuc hien
                 contestant.decreaseEnergy();
+                //In ket qua
                 System.out.println("Thi sinh " + contestant.getName() + " (" + contestant.getRole() + ") trang tri mon " + dish.getName() + " -> Tang diem trinh bay len " + num);
                 log.add("* Luot" + state.getTurnCount() + ": " + contestant.getName() + " (Doi " + team1.getName() + ")" + " trang tri mon " + dish.getName());
             }
@@ -161,6 +175,33 @@ public class Simulation {
             System.out.println();
         }
 
+        //Tinh tong diem cua 2 doi sau khi cong 2 diem chat luong va diem trinh bay
+        for(Team team : teams) {
+            int sum = 0;
+            for(Dish dish : team.getDishs()) {
+                if(dish.getPrepTime() == 0) {
+                    sum += dish.getBonus(); // Nếu món ăn đã hết prep time thì món đó được coi là hoàn thành và đội hoàn thành món sẽ được cộng bonus thêm điểm cua mon do
+                };
+                sum += dish.calculateScore();
+            }
+            team.setScoreTeam(team.getScoreTeam() + sum);
+        }
+
+        // Tong ket
+        System.out.println("Diem cua 2 doi:");
+        for(Team team : teams) {
+            System.out.println("+ Doi " + team.getName() + ": " + team.getScoreTeam() + " diem");
+        }
+        if(team1.getScoreTeam() > team2.getScoreTeam()) {
+            System.out.println("Doi thang cuoc la doi " + team1.getName() + " voi so diem la " + team1.getScoreTeam());
+        }
+        else if(team2.getScoreTeam() > team1.getScoreTeam()) {
+            System.out.println("Doi thang cuoc la doi " + team2.getName() + " voi so diem la " + team2.getScoreTeam());
+        }
+        else {
+            System.out.println("Hai doi hoa nhau voi so diem: " + team1.getScoreTeam());
+        }
+        // Nhat ky
         System.out.println("Nhat ky:");
         for(String s : log) {
             System.out.println(s);

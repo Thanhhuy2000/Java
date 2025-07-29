@@ -7,11 +7,13 @@ public class Team {
     private String name;
     private List<Contestant> contestants;
     private List<Dish> dishs;
+    private int scoreTeam;
 
     public Team(String name) {
         this.name = name;
         this.contestants = new ArrayList<Contestant>();
         this.dishs = new ArrayList<Dish>();
+        this.scoreTeam = 0;
     }
 
     public void addContestant(Contestant contestant) {
@@ -51,4 +53,6 @@ public class Team {
     public String getName() { return this.name; }
     public List<Contestant> getContestants() { return this.contestants; }
     public List<Dish> getDishs() { return this.dishs; }
+    public int getScoreTeam() { return this.scoreTeam; }
+    public void setScoreTeam(int scoreTeam) { this.scoreTeam = scoreTeam; }
 }
